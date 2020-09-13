@@ -36116,10 +36116,16 @@ function ProductRow(_ref2) {
 }
 
 function ProductTable(_ref3) {
-  var products = _ref3.products;
+  var products = _ref3.products,
+      inStockOnly = _ref3.inStockOnly,
+      filterText = _ref3.filterText;
   var rows = [];
   var lastCategory = null;
   products.forEach(function (product) {
+    if (inStockOnly && !product.stocked || product.name.indexOf(filterText) === -1) {
+      return;
+    }
+
     if (product.category !== lastCategory) {
       lastCategory = product.category;
       rows.push( /*#__PURE__*/_react.default.createElement(ProductCategoryRow, {
@@ -36142,23 +36148,115 @@ function ProductTable(_ref3) {
   }, "Price"))), /*#__PURE__*/_react.default.createElement("tbody", null, rows));
 }
 
-var FilterableProductTable = /*#__PURE__*/function (_React$Component) {
-  _inherits(FilterableProductTable, _React$Component);
+var SearchBar = /*#__PURE__*/function (_React$Component) {
+  _inherits(SearchBar, _React$Component);
 
-  var _super = _createSuper(FilterableProductTable);
+  var _super = _createSuper(SearchBar);
 
-  function FilterableProductTable() {
+  function SearchBar(props) {
+    var _this;
+
+    _classCallCheck(this, SearchBar);
+
+    _this = _super.call(this, props);
+    _this.handleFilterTextChange = _this.handleFilterTextChange.bind(_assertThisInitialized(_this));
+    _this.handleInStockChange = _this.handleInStockChange.bind(_assertThisInitialized(_this));
+    return _this;
+  }
+
+  _createClass(SearchBar, [{
+    key: "handleFilterTextChange",
+    value: function handleFilterTextChange(e) {
+      this.props.onFilterTextChange(e.target.value);
+    }
+  }, {
+    key: "handleInStockChange",
+    value: function handleInStockChange(e) {
+      this.props.onStockChange(e.target.checked);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this$props = this.props,
+          filterText = _this$props.filterText,
+          inStockOnly = _this$props.inStockOnly;
+      return /*#__PURE__*/_react.default.createElement("div", {
+        className: "mt-4 mb-4"
+      }, /*#__PURE__*/_react.default.createElement("div", {
+        className: "form-group"
+      }, /*#__PURE__*/_react.default.createElement("input", {
+        type: "text",
+        className: "form-control",
+        placeholder: "rechercher",
+        value: filterText,
+        onChange: this.handleFilterTextChange
+      })), /*#__PURE__*/_react.default.createElement("div", {
+        className: "form-check"
+      }, /*#__PURE__*/_react.default.createElement("input", {
+        type: "checkbox",
+        className: "form-check-input",
+        id: "stock",
+        checked: inStockOnly,
+        onChange: this.handleInStockChange
+      }), /*#__PURE__*/_react.default.createElement("label", {
+        htmlFor: "stock",
+        className: "form-check-label"
+      }, "Produit en stock seulement")));
+    }
+  }]);
+
+  return SearchBar;
+}(_react.default.Component);
+
+var FilterableProductTable = /*#__PURE__*/function (_React$Component2) {
+  _inherits(FilterableProductTable, _React$Component2);
+
+  var _super2 = _createSuper(FilterableProductTable);
+
+  function FilterableProductTable(props) {
+    var _this2;
+
     _classCallCheck(this, FilterableProductTable);
 
-    return _super.apply(this, arguments);
+    _this2 = _super2.call(this, props);
+    _this2.state = {
+      filterText: '',
+      inStockOnly: false
+    };
+    _this2.handleFilterTextChange = _this2.handleFilterTextChange.bind(_assertThisInitialized(_this2));
+    _this2.handleInStockChange = _this2.handleInStockChange.bind(_assertThisInitialized(_this2));
+    return _this2;
   }
 
   _createClass(FilterableProductTable, [{
+    key: "handleFilterTextChange",
+    value: function handleFilterTextChange(filterText) {
+      this.setState({
+        filterText: filterText
+      });
+    }
+  }, {
+    key: "handleInStockChange",
+    value: function handleInStockChange(inStockOnly) {
+      this.setState({
+        inStockOnly: inStockOnly
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
       var products = this.props.products;
-      return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(ProductTable, {
-        products: products
+      return /*#__PURE__*/_react.default.createElement("div", {
+        className: "container"
+      }, JSON.stringify(this.state), /*#__PURE__*/_react.default.createElement(SearchBar, {
+        filterText: this.state.filterText,
+        inStockOnly: this.state.inStockOnly,
+        onFilterTextChange: this.handleFilterTextChange,
+        onStockChange: this.handleInStockChange
+      }), /*#__PURE__*/_react.default.createElement(ProductTable, {
+        products: products,
+        filterText: this.state.filterText,
+        inStockOnly: this.state.inStockOnly
       }));
     }
   }]);
